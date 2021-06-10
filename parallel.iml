@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" name="org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3" level="project" />
+    <orderEntry type="module-library" scope="TEST">
+      <library name="JUnit5.7.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../untitled/lib/junit-jupiter-5.7.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../untitled/lib/junit-jupiter-api-5.7.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../untitled/lib/apiguardian-api-1.1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../untitled/lib/opentest4j-1.2.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../untitled/lib/junit-platform-commons-1.7.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../untitled/lib/junit-jupiter-params-5.7.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../untitled/lib/junit-jupiter-engine-5.7.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../untitled/lib/junit-platform-engine-1.7.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>
