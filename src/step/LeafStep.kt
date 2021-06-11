@@ -9,35 +9,76 @@ package step
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
-class LeafStep(vararg steps: Step) {
+interface Step {
+    fun execute(): Boolean
+}
+
+class LeafStep(vararg steps: Step) : Step {
     private val steps = steps.toList()
-    fun execute(): Boolean {
+
+    override fun execute(): Boolean {
         return runBlocking {
-            val jobs = steps.map { step -> async { step.execute() } }
+            steps
+                .map { step -> async { execute(step) } }
+                .all { job -> job.await() }
+        }
+    }
+
+    fun loopingExecute(): Boolean {
+        return runBlocking {
+            val jobs = steps.map { step -> async { execute(step) } }
             var result = true
             for (job in jobs) result = result && job.await()
             result
         }
     }
 
-    interface Step {
-        suspend fun execute(): Boolean
+    private suspend fun execute(step: Step) = step.execute().also { result ->
+        delay(if (result) 2000 else 5000) // Sleep interrupts all threads!
     }
 
     internal class SuccessStep : Step {
-
-        override suspend fun execute(): Boolean {
-            delay(2000) // Sleep interrupts all threads!
-            return true
-        }
+        override fun execute() = true
     }
 
     internal class FailureStep : Step {
+        override fun execute() = false
+    }
+}
 
-        override suspend fun execute(): Boolean {
-            delay(5000) // Sleep interrupts all threads!
-            return false
-        }
+internal class TestLeafStep {
+
+    @Test
+    fun `functional success`() {
+        assertTrue(LeafStep(
+            LeafStep.SuccessStep(),
+            LeafStep.SuccessStep(),
+            LeafStep.SuccessStep(),
+            LeafStep.SuccessStep()
+        ).execute())
+    }
+
+    @Test
+    fun `looping success`() {
+        assertTrue(LeafStep(
+            LeafStep.SuccessStep(),
+            LeafStep.SuccessStep(),
+            LeafStep.SuccessStep(),
+            LeafStep.SuccessStep()
+        ).loopingExecute())
+    }
+
+    @Test fun `functional failure`() {
+        assertFalse(LeafStep(
+            LeafStep.SuccessStep(),
+            LeafStep.SuccessStep(),
+            LeafStep.SuccessStep(),
+            LeafStep.FailureStep(),
+            LeafStep.SuccessStep()
+        ).execute())
     }
 }
