@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test
 
 interface Step {
     fun execute(): Boolean
+    fun undo() = Unit
 }
 
 class LeafStep(vararg steps: Step) : Step {
@@ -24,11 +25,19 @@ class LeafStep(vararg steps: Step) : Step {
         return runBlocking {
             steps
                 .map { step -> async { execute(step) } }
-                .all { job -> job.await() }
+                .map { job -> job.await() }
+                .let { results ->
+                    results.all {it}
+                        .also { finalResult ->
+                            if (!finalResult) steps.zip(results).forEach { (step, stepResult) ->
+                                if (stepResult) step.undo()
+                            }
+                        }
+                }
         }
     }
 
-    fun loopingExecute(): Boolean {
+    internal fun loopingExecute(): Boolean {
         return runBlocking {
             val jobs = steps.map { step -> async { execute(step) } }
             var result = true
