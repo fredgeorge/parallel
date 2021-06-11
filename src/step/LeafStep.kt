@@ -40,17 +40,8 @@ class LeafStep(vararg steps: Step) : Step {
         }
     }
 
-    internal fun loopingExecute(): Boolean {
-        return runBlocking {
-            val jobs = steps.map { step -> async { execute(step) } }
-            var result = true
-            for (job in jobs) result = result && job.await()
-            result
-        }
-    }
-
     private suspend fun execute(step: Step) = step.execute().also { result ->
-        delay(if (result) 2000 else 5000) // Sleep interrupts all threads!
+        delay(if (result) 2000 else 3000) // Sleep interrupts all threads!
     }
 
     internal class SuccessStep : Step {
@@ -63,6 +54,7 @@ class LeafStep(vararg steps: Step) : Step {
 }
 
 internal class TestLeafStep {
+    // Tests may be run in parallel threads, so time could be 3-5 seconds depending
 
     @Test
     fun `functional success`() {
@@ -72,19 +64,8 @@ internal class TestLeafStep {
                 SuccessStep(),
                 SuccessStep(),
                 SuccessStep()
-            ).execute()
-        )
-    }
-
-    @Test
-    fun `looping success`() {
-        assertTrue(
-            LeafStep(
-                SuccessStep(),
-                SuccessStep(),
-                SuccessStep(),
-                SuccessStep()
-            ).loopingExecute()
+            ).execute(),
+            "This test should only take a bit more than 2 seconds"
         )
     }
 
@@ -97,7 +78,8 @@ internal class TestLeafStep {
                 SuccessStep(),
                 FailureStep(),
                 SuccessStep()
-            ).execute()
+            ).execute(),
+            "This test should only take a bit more than 3 seconds"
         )
     }
 }
