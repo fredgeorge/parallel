@@ -12,6 +12,8 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import step.LeafStep.FailureStep
+import step.LeafStep.SuccessStep
 
 interface Step {
     fun execute(): Boolean
@@ -66,10 +68,10 @@ internal class TestLeafStep {
     fun `functional success`() {
         assertTrue(
             LeafStep(
-                LeafStep.SuccessStep(),
-                LeafStep.SuccessStep(),
-                LeafStep.SuccessStep(),
-                LeafStep.SuccessStep()
+                SuccessStep(),
+                SuccessStep(),
+                SuccessStep(),
+                SuccessStep()
             ).execute()
         )
     }
@@ -78,10 +80,10 @@ internal class TestLeafStep {
     fun `looping success`() {
         assertTrue(
             LeafStep(
-                LeafStep.SuccessStep(),
-                LeafStep.SuccessStep(),
-                LeafStep.SuccessStep(),
-                LeafStep.SuccessStep()
+                SuccessStep(),
+                SuccessStep(),
+                SuccessStep(),
+                SuccessStep()
             ).loopingExecute()
         )
     }
@@ -90,11 +92,11 @@ internal class TestLeafStep {
     fun `functional failure`() {
         assertFalse(
             LeafStep(
-                LeafStep.SuccessStep(),
-                LeafStep.SuccessStep(),
-                LeafStep.SuccessStep(),
-                LeafStep.FailureStep(),
-                LeafStep.SuccessStep()
+                SuccessStep(),
+                SuccessStep(),
+                SuccessStep(),
+                FailureStep(),
+                SuccessStep()
             ).execute()
         )
     }
