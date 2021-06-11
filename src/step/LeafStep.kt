@@ -27,7 +27,8 @@ class LeafStep(vararg steps: Step) : Step {
                 .map { step -> async { execute(step) } }
                 .map { job -> job.await() }
                 .let { results ->
-                    results.all {it}
+                    results
+                        .all { it }
                         .also { finalResult ->
                             if (!finalResult) steps.zip(results).forEach { (step, stepResult) ->
                                 if (stepResult) step.undo()
@@ -63,31 +64,38 @@ internal class TestLeafStep {
 
     @Test
     fun `functional success`() {
-        assertTrue(LeafStep(
-            LeafStep.SuccessStep(),
-            LeafStep.SuccessStep(),
-            LeafStep.SuccessStep(),
-            LeafStep.SuccessStep()
-        ).execute())
+        assertTrue(
+            LeafStep(
+                LeafStep.SuccessStep(),
+                LeafStep.SuccessStep(),
+                LeafStep.SuccessStep(),
+                LeafStep.SuccessStep()
+            ).execute()
+        )
     }
 
     @Test
     fun `looping success`() {
-        assertTrue(LeafStep(
-            LeafStep.SuccessStep(),
-            LeafStep.SuccessStep(),
-            LeafStep.SuccessStep(),
-            LeafStep.SuccessStep()
-        ).loopingExecute())
+        assertTrue(
+            LeafStep(
+                LeafStep.SuccessStep(),
+                LeafStep.SuccessStep(),
+                LeafStep.SuccessStep(),
+                LeafStep.SuccessStep()
+            ).loopingExecute()
+        )
     }
 
-    @Test fun `functional failure`() {
-        assertFalse(LeafStep(
-            LeafStep.SuccessStep(),
-            LeafStep.SuccessStep(),
-            LeafStep.SuccessStep(),
-            LeafStep.FailureStep(),
-            LeafStep.SuccessStep()
-        ).execute())
+    @Test
+    fun `functional failure`() {
+        assertFalse(
+            LeafStep(
+                LeafStep.SuccessStep(),
+                LeafStep.SuccessStep(),
+                LeafStep.SuccessStep(),
+                LeafStep.FailureStep(),
+                LeafStep.SuccessStep()
+            ).execute()
+        )
     }
 }
